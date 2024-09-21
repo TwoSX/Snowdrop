@@ -35,13 +35,18 @@ public extension Snowdrop.Core {
         guard var response = urlResponse as? HTTPURLResponse else {
             throw SnowdropError(type: .failedToMapResponse)
         }
-        
-        guard var finalData = data else {
-            return (data, response)
+      
+        var finalData = data
+
+        if var responseData = finalData {
+          applyResponseBlocks(responseBlocks, forData: &responseData, response: &response)
+          finalData = responseData
         }
-        
-        applyResponseBlocks(responseBlocks, forData: &finalData, response: &response)
-        
+
+        if !(200...299).contains(response.statusCode) {
+            try handleRequestFailure(statusCode: response.statusCode, data: finalData)
+        }
+
         return (finalData, response)
     }
     
@@ -92,13 +97,23 @@ public extension Snowdrop.Core {
         let networkErrorCodes = [
             NSURLErrorNetworkConnectionLost,
             NSURLErrorNotConnectedToInternet,
-            NSURLErrorCannotLoadFromNetwork
+            NSURLErrorCannotLoadFromNetwork,
+            NSURLErrorTimedOut
         ]
         
         let errorType: SnowdropError.ErrorType = networkErrorCodes.contains(error.code) ? .noInternetConnection : .unexpectedResponse
         let errorDetails = SnowdropErrorDetails(statusCode: error.code,
                                                 localizedString: error.localizedDescription)
         let SnowdropError = SnowdropError(type: errorType, details: errorDetails)
+        throw SnowdropError
+    }
+
+    private func handleRequestFailure(statusCode: Int, data: Data?) throws {
+        var localizedString = HTTPURLResponse.localizedString(forStatusCode: statusCode).capitalized
+        localizedString = "StatusCode \(statusCode): \(localizedString)"
+        let errorDetails = SnowdropErrorDetails(statusCode: statusCode, localizedString: localizedString)
+        let SnowdropError = SnowdropError(type: .unexpectedResponse, details: errorDetails, data: data)
+
         throw SnowdropError
     }
 }
