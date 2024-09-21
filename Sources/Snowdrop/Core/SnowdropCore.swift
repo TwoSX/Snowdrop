@@ -44,7 +44,7 @@ public extension Snowdrop.Core {
         }
 
         if !(200...299).contains(response.statusCode) {
-            try handleRequestFailure(statusCode: response.statusCode, data: finalData)
+            try handleRequestFailure(statusCode: response.statusCode, data: finalData, response: response)
         }
 
         return (finalData, response)
@@ -108,10 +108,16 @@ public extension Snowdrop.Core {
         throw SnowdropError
     }
 
-    private func handleRequestFailure(statusCode: Int, data: Data?) throws {
+    private func handleRequestFailure(statusCode: Int, data: Data?, response: HTTPURLResponse) throws {
         var localizedString = HTTPURLResponse.localizedString(forStatusCode: statusCode).capitalized
         localizedString = "StatusCode \(statusCode): \(localizedString)"
-        let errorDetails = SnowdropErrorDetails(statusCode: statusCode, localizedString: localizedString)
+        let errorDetails = SnowdropErrorDetails(
+            statusCode: statusCode,
+            localizedString: localizedString,
+            url: response.url,
+            mimeType: response.mimeType,
+            headers: response.allHeaderFields
+        )
         let SnowdropError = SnowdropError(type: .unexpectedResponse, details: errorDetails, data: data)
 
         throw SnowdropError
