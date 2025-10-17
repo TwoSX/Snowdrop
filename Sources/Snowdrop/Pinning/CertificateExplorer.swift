@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CertificateExplorer {
+final class CertificateExplorer: Sendable {
 	func fetchCertificates() -> [SecCertificate] {
 		var certificates: [SecCertificate] = []
 		

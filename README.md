@@ -1,4 +1,4 @@
-![alt [version]](https://img.shields.io/github/v/release/neothXT/Snowdrop) ![alt spm available](https://img.shields.io/badge/SPM-available-green)
+![alt [version]](https://img.shields.io/github/v/release/neothXT/Snowdrop) ![alt spm available](https://img.shields.io/badge/SPM-available-green) ![alt cocoapods available](https://img.shields.io/badge/CocoaPods-unavailable-red) ![alt carthage unavailable](https://img.shields.io/badge/Carthage-unavailable-red) ![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange.svg) ![Concurrency Safe](https://img.shields.io/badge/Concurrency-Safe-brightgreen.svg)
 
 ![alt text](https://github.com/neothXT/Snowdrop/blob/main/Snowdrop_Logo.png)
 
@@ -6,9 +6,12 @@
 
 Meet **Snowdrop** - type-safe, easy to use framework powered by Swift Macros created to let you build and maintain complex network requests with ease.
 
+> **🎉 Swift 6.0 支持！** Snowdrop 现已完全支持 Swift 6.0，具备完整的编译时并发安全检查。查看 [迁移指南](./SWIFT6_MIGRATION_GUIDE.md) 了解详情。
+
 ## Navigation
 
 - [Installation](#installation)
+- [Swift 6.0 Support](#swift-60-support)
 - [Key Functionalities](#key-functionalities)
 - [Basic Usage](#basic-usage)
     - [Service Declaration](#service-declaration)
@@ -29,6 +32,40 @@ Meet **Snowdrop** - type-safe, easy to use framework powered by Swift Macros cre
 ## Installation
 
 Snowdrop is available via SPM. It works with iOS Deployment Target 14.0 or later and macOS Deployment Target 11 or later.
+
+### Requirements
+
+- **Swift**: 6.0+
+- **iOS**: 14.0+
+- **macOS**: 11.0+
+- **Xcode**: 16.0+ (recommended)
+
+## Swift 6.0 Support
+
+Snowdrop 完全支持 Swift 6.0，具备以下特性：
+
+- ✅ **编译时数据竞争检查** - 在编译时就能发现并发问题
+- ✅ **完整的 Sendable 支持** - 所有公开 API 都是并发安全的
+- ✅ **严格并发检查** - 启用 `StrictConcurrency` 特性
+- ✅ **类型安全保证** - 更强的类型安全检查
+
+### 迁移资源
+
+如果你正在从 Swift 5.9 升级到 6.0，请查阅以下文档：
+
+- 📖 [完整迁移指南](./SWIFT6_MIGRATION_GUIDE.md) - 详细的迁移步骤和技术细节
+- 🚀 [快速参考指南](./SWIFT6_QUICK_REFERENCE.md) - 常见问题和最佳实践
+- 📝 [更新日志](./CHANGELOG_SWIFT6.md) - 所有变化的详细记录
+
+### 主要变化
+
+在 Swift 6.0 版本中，有几个小的 API 变化需要注意：
+
+1. **SnowdropErrorDetails.headers** 现在是 `[String: String]?` 类型（之前是 `[AnyHashable: Any]?`）
+2. **QueryItem.value** 必须是 `Sendable` 类型
+3. **RequestHandler 和 ResponseHandler** 闭包现在是 `@Sendable`
+
+大多数代码无需修改即可工作。查看 [快速参考指南](./SWIFT6_QUICK_REFERENCE.md) 了解更多细节。
 
 ## Key Functionalities
 

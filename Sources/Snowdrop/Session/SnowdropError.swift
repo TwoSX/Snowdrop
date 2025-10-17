@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SnowdropError: Error {
+public struct SnowdropError: Error, Sendable {
     public let type: ErrorType
     public let details: SnowdropErrorDetails?
     /// Data returned by the request
@@ -21,7 +21,7 @@ public struct SnowdropError: Error {
 }
 
 public extension SnowdropError {
-    enum ErrorType {
+    enum ErrorType: Sendable {
         case failedToMapResponse, unexpectedResponse, noInternetConnection, unknown
     }
     
@@ -42,14 +42,14 @@ public extension SnowdropError {
     }
 }
 
-public struct SnowdropErrorDetails {
+public struct SnowdropErrorDetails: Sendable {
     public let statusCode: Int
     public let localizedString: String
     public let url: URL?
     public let mimeType: String?
-    public let headers: [AnyHashable: Any]?
+    public let headers: [String: String]?
     /// Original (underlying) error
-    public let ogError: Error?
+    public let ogError: (any Error)?
     
     public init(
         statusCode: Int,
@@ -57,13 +57,21 @@ public struct SnowdropErrorDetails {
         url: URL? = nil,
         mimeType: String? = nil,
         headers: [AnyHashable: Any]? = nil,
-        ogError: Error? = nil
+        ogError: (any Error)? = nil
     ) {
         self.statusCode = statusCode
         self.localizedString = localizedString
         self.url = url
         self.mimeType = mimeType
-        self.headers = headers
+        // Convert headers to [String: String] for Sendable conformance
+        self.headers = headers?.compactMapValues { value in
+            if let stringValue = value as? String {
+                return stringValue
+            }
+            return String(describing: value)
+        }.reduce(into: [String: String]()) { result, pair in
+            result[String(describing: pair.key)] = pair.value
+        }
         self.ogError = ogError
     }
 }

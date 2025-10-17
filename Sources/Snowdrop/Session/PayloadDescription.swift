@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct PayloadDescription {
+public struct PayloadDescription: Sendable {
     var name: String
     var fileName: String
     var mimeType: String

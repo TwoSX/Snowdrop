@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "Swift Package Dependencies",
+			"path": ".build/checkouts"
+		}
+	],
+	"extensions": {
+		"recommendations": ["sswg.swift-lang"],
+	},
+	"settings": {
+		"files.exclude": {
+			".build": true,
+			".swiftpm": true
+		},
+		"swift.SDK": "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk",
+		"swift.buildArguments": [
+			"--triple",
+			"arm64-apple-ios-simulator",
+			"-Xswiftc",
+			"-target",
+			"-Xswiftc",
+			"arm64-apple-ios18.0-simulator"
+		],
+	}
+}

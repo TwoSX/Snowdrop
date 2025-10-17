@@ -17,7 +17,7 @@ extension Data: DataConvertible {
     }
 }
 
-public enum MimeType: String {
+public enum MimeType: String, Sendable {
     case jpeg = "image/jpeg"
     case png = "image/png"
     case gif = "image/gif"
