@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Service {
+public protocol Service: AnyObject, Sendable {
     var baseUrl: URL { get }
 
     var requestBlocks: [String: RequestHandler] { get set }

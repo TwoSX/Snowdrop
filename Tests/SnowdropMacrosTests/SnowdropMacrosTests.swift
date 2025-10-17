@@ -30,7 +30,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func getPosts(for id: Int?, model: Model, test: Bool) async throws -> Post
             }
             
-            class TestEndpointService: TestEndpoint, Service {
+            final class TestEndpointService: TestEndpoint, Service, @unchecked Sendable {
                 let baseUrl: URL
             
                 var requestBlocks: [String: RequestHandler] = [:]
@@ -162,7 +162,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func uploadFile(file: Data) async throws -> Post
             }
             
-            public class TestEndpointService: TestEndpoint, Service {
+            public final class TestEndpointService: TestEndpoint, Service, @unchecked Sendable {
                 public let baseUrl: URL
             
                 public var requestBlocks: [String: RequestHandler] = [:]
@@ -285,7 +285,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func uploadFile(file: Data) async throws -> Post
             }
             
-            public class TestEndpointServiceMock: TestEndpoint, Service {
+            public final class TestEndpointServiceMock: TestEndpoint, Service, @unchecked Sendable {
                 public let baseUrl: URL
             
                 public var requestBlocks: [String: RequestHandler] = [:]

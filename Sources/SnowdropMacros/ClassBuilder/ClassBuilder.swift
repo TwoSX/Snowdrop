@@ -26,7 +26,7 @@ struct ClassBuilder {
     
     static func build(type: ClassType, accessModifier: String, name: String, functions: String) -> DeclSyntax {
                 """
-                \(raw: accessModifier)class \(raw: name)\(raw: type.suffix(for: name)): \(raw: name), Service {
+                \(raw: accessModifier)final class \(raw: name)\(raw: type.suffix(for: name)): \(raw: name), Service, @unchecked Sendable {
                     \(raw: accessModifier)let baseUrl: URL
                 
                     \(raw: accessModifier)var requestBlocks: [String: RequestHandler] = [:]
