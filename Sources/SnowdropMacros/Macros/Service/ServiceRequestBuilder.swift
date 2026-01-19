@@ -54,11 +54,12 @@ struct ServiceRequestBuilder: ClassMethodBodyBuilderProtocol {
         if details.isUploadingFile, let body = details.body?.key {
             requestImpl += """
             
+                let _boundary = Snowdrop.core.generateBoundary()
                 if (headers["Content-Type"] as? String) == nil {
-                    request.addValue("multipart/form-data", forHTTPHeaderField: "Content-Type")
+                    request.addValue("multipart/form-data; boundary=\\(_boundary)", forHTTPHeaderField: "Content-Type")
                 }
             
-                request.httpBody = Snowdrop.core.dataWithBoundary(\(body), payloadDescription: _payloadDescription)\n
+                request.httpBody = Snowdrop.core.dataWithBoundary(\(body), payloadDescription: _payloadDescription, boundary: _boundary)\n
             """
         } else if let body = details.body?.key {
             requestImpl += """

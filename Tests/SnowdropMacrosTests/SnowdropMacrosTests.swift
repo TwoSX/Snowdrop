@@ -30,7 +30,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func getPosts(for id: Int?, model: Model, test: Bool) async throws -> Post
             }
             
-            class TestEndpointService: TestEndpoint, Service {
+            final class TestEndpointService: TestEndpoint, Service, @unchecked Sendable {
                 let baseUrl: URL
             
                 var requestBlocks: [String: RequestHandler] = [:]
@@ -162,7 +162,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func uploadFile(file: Data) async throws -> Post
             }
             
-            public class TestEndpointService: TestEndpoint, Service {
+            public final class TestEndpointService: TestEndpoint, Service, @unchecked Sendable {
                 public let baseUrl: URL
             
                 public var requestBlocks: [String: RequestHandler] = [:]
@@ -227,11 +227,12 @@ final class SnowdropMacrosTests: XCTestCase {
             
                     var request = prepareBasicRequest(url: url, method: "POST", queryItems: _queryItems, headers: headers)
 
+                    let _boundary = Snowdrop.core.generateBoundary()
                     if (headers["Content-Type"] as? String) == nil {
-                        request.addValue("multipart/form-data", forHTTPHeaderField: "Content-Type")
+                        request.addValue("multipart/form-data; boundary=\\(_boundary)", forHTTPHeaderField: "Content-Type")
                     }
             
-                    request.httpBody = Snowdrop.core.dataWithBoundary(file, payloadDescription: _payloadDescription)
+                    request.httpBody = Snowdrop.core.dataWithBoundary(file, payloadDescription: _payloadDescription, boundary: _boundary)
             
                     return try await Snowdrop.core.performRequestAndDecode(request, service: self)
                 }
@@ -285,7 +286,7 @@ final class SnowdropMacrosTests: XCTestCase {
                 func uploadFile(file: Data) async throws -> Post
             }
             
-            public class TestEndpointServiceMock: TestEndpoint, Service {
+            public final class TestEndpointServiceMock: TestEndpoint, Service, @unchecked Sendable {
                 public let baseUrl: URL
             
                 public var requestBlocks: [String: RequestHandler] = [:]
