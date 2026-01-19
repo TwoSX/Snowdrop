@@ -10,7 +10,7 @@ import SwiftSyntax
 enum ClassType: String {
     case service
     case mock
-    
+
     func suffix(for name: String) -> String {
         switch self {
         case .service:
@@ -22,46 +22,46 @@ enum ClassType: String {
 }
 
 struct ClassBuilder {
-    private init() { }
-    
+    private init() {}
+
     static func build(type: ClassType, accessModifier: String, name: String, functions: String) -> DeclSyntax {
-                """
-                \(raw: accessModifier)class \(raw: name)\(raw: type.suffix(for: name)): \(raw: name), Service {
-                    \(raw: accessModifier)let baseUrl: URL
-                
-                    \(raw: accessModifier)var requestBlocks: [String: RequestHandler] = [:]
-                    \(raw: accessModifier)var responseBlocks: [String: ResponseHandler] = [:]
-                
-                    \(raw: accessModifier)var testJSONDictionary: [String: String]?
-                
-                    \(raw: accessModifier)var decoder: JSONDecoder
-                    \(raw: accessModifier)var pinningMode: PinningMode?
-                    \(raw: accessModifier)var urlsExcludedFromPinning: [String]
-                    \(raw: accessModifier)let verbose: Bool
-                
-                    \(raw: accessModifier)required init(
-                        baseUrl: URL,
-                        pinningMode: PinningMode? = nil,
-                        urlsExcludedFromPinning: [String] = [],
-                        decoder: JSONDecoder = .init(),
-                        verbose: Bool = false
-                    ) {
-                        self.baseUrl = baseUrl
-                        self.pinningMode = pinningMode
-                        self.urlsExcludedFromPinning = urlsExcludedFromPinning
-                        self.decoder = decoder
-                        self.verbose = verbose
-                    }
-                
-                \(raw: ClassBuilder.buildBeforeSendingBlockFunc(for: type, accessModifier: accessModifier))
-                    
-                \(raw: ClassBuilder.buildOnResponseBlockFunc(for: type, accessModifier: accessModifier))
-                
-                \(raw: functions + ClassBuilder.prepareBasicRequest(for: type))
-                }
-                """
+        """
+        \(raw: accessModifier)final class \(raw: name)\(raw: type.suffix(for: name)): \(raw: name), Service, @unchecked Sendable {
+            \(raw: accessModifier)let baseUrl: URL
+
+            \(raw: accessModifier)var requestBlocks: [String: RequestHandler] = [:]
+            \(raw: accessModifier)var responseBlocks: [String: ResponseHandler] = [:]
+
+            \(raw: accessModifier)var testJSONDictionary: [String: String]?
+
+            \(raw: accessModifier)var decoder: JSONDecoder
+            \(raw: accessModifier)var pinningMode: PinningMode?
+            \(raw: accessModifier)var urlsExcludedFromPinning: [String]
+            \(raw: accessModifier)let verbose: Bool
+
+            \(raw: accessModifier)required init(
+                baseUrl: URL,
+                pinningMode: PinningMode? = nil,
+                urlsExcludedFromPinning: [String] = [],
+                decoder: JSONDecoder = .init(),
+                verbose: Bool = false
+            ) {
+                self.baseUrl = baseUrl
+                self.pinningMode = pinningMode
+                self.urlsExcludedFromPinning = urlsExcludedFromPinning
+                self.decoder = decoder
+                self.verbose = verbose
+            }
+
+        \(raw: ClassBuilder.buildBeforeSendingBlockFunc(for: type, accessModifier: accessModifier))
+            
+        \(raw: ClassBuilder.buildOnResponseBlockFunc(for: type, accessModifier: accessModifier))
+
+        \(raw: functions + ClassBuilder.prepareBasicRequest(for: type))
+        }
+        """
     }
-    
+
     private static func buildBeforeSendingBlockFunc(for type: ClassType, accessModifier: String) -> String {
         guard type == .service else {
             return """
@@ -70,7 +70,7 @@ struct ClassBuilder {
                 }
             """
         }
-        
+
         return """
             \(accessModifier)func addBeforeSendingBlock(for path: String? = nil, _ block: @escaping RequestHandler) {
                 var key = "all"
@@ -85,7 +85,7 @@ struct ClassBuilder {
             }
         """
     }
-    
+
     private static func buildOnResponseBlockFunc(for type: ClassType, accessModifier: String) -> String {
         guard type == .service else {
             return """
@@ -94,7 +94,7 @@ struct ClassBuilder {
                 }
             """
         }
-        
+
         return """
             \(accessModifier)func addOnResponseBlock(for path: String? = nil, _ block: @escaping ResponseHandler) {
                 var key = "all"
@@ -109,10 +109,10 @@ struct ClassBuilder {
             }
         """
     }
-    
-    static private func prepareBasicRequest(for type: ClassType) -> String {
+
+    private static func prepareBasicRequest(for type: ClassType) -> String {
         guard type == .service else { return "" }
-        
+
         return """
             \n\nprivate func prepareBasicRequest(url: URL, method: String, queryItems: [QueryItem], headers: [String: Any]) -> URLRequest {
             var finalUrl = url
